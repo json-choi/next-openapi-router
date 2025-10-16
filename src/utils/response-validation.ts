@@ -29,14 +29,24 @@ export interface ResponseValidationConfig {
 }
 
 /**
- * Default response validation configuration
+ * Get default response validation configuration
+ * This function evaluates the environment at runtime to ensure proper test behavior
  */
-export const DEFAULT_RESPONSE_VALIDATION_CONFIG: ResponseValidationConfig = {
-    enabled: process.env['NODE_ENV'] === 'development',
-    logErrors: true,
-    throwOnError: false,
-    includeErrorsInHeaders: process.env['NODE_ENV'] === 'development',
-};
+export function getDefaultResponseValidationConfig(): ResponseValidationConfig {
+    return {
+        enabled: process.env['NODE_ENV'] === 'development',
+        logErrors: true,
+        throwOnError: false,
+        includeErrorsInHeaders: process.env['NODE_ENV'] === 'development',
+    };
+}
+
+/**
+ * Default response validation configuration
+ * @deprecated Use getDefaultResponseValidationConfig() instead for runtime evaluation
+ */
+export const DEFAULT_RESPONSE_VALIDATION_CONFIG: ResponseValidationConfig =
+    getDefaultResponseValidationConfig();
 
 /**
  * Result of response validation
@@ -88,9 +98,14 @@ export async function validateResponse(
         if (contentType.includes('application/json')) {
             responseData = await clonedResponse.json();
         } else if (contentType.includes('text/')) {
-            responseData = await clonedResponse.text();
+            // For text responses, return valid (gracefully handled)
+            return {
+                valid: true,
+                statusCode: response.status,
+                responseData: await clonedResponse.text(),
+            };
         } else {
-            // For other content types, we can't easily validate
+            // For other content types, return valid (gracefully handled)
             return {
                 valid: true,
                 statusCode: response.status,
@@ -142,7 +157,7 @@ export async function validateResponseWithSchemas(
     schemaMap: Record<number, ZodSchema>,
     config: Partial<ResponseValidationConfig> = {}
 ): Promise<ResponseValidationResult> {
-    const finalConfig = { ...DEFAULT_RESPONSE_VALIDATION_CONFIG, ...config };
+    const finalConfig = { ...getDefaultResponseValidationConfig(), ...config };
 
     // Skip validation if disabled
     if (!finalConfig.enabled) {
@@ -165,6 +180,7 @@ export async function validateResponseWithSchemas(
             console.warn('Response validation warning:', error);
         }
 
+        // For missing schema, we return valid: false but still continue processing
         return {
             valid: false,
             errors: [error],
@@ -207,9 +223,9 @@ export function addValidationHeaders(
     validationResult: ResponseValidationResult,
     config: Partial<ResponseValidationConfig> = {}
 ): NextResponse {
-    const finalConfig = { ...DEFAULT_RESPONSE_VALIDATION_CONFIG, ...config };
+    const finalConfig = { ...getDefaultResponseValidationConfig(), ...config };
 
-    if (!finalConfig.includeErrorsInHeaders || finalConfig.enabled !== true) {
+    if (!finalConfig.includeErrorsInHeaders || !finalConfig.enabled) {
         return response;
     }
 
@@ -245,7 +261,7 @@ export async function createValidatedResponse<T>(
 ): Promise<NextResponse> {
     const HTTP_STATUS_OK = 200;
     const { status = HTTP_STATUS_OK, headers, config } = options;
-    const finalConfig = { ...DEFAULT_RESPONSE_VALIDATION_CONFIG, ...config };
+    const finalConfig = { ...getDefaultResponseValidationConfig(), ...config };
 
     // Create the response
     const responseInit: { status: number; headers?: Record<string, string> | Headers } = { status };
@@ -308,7 +324,7 @@ export function createResponseValidationMiddleware(
 export function isResponseValidationEnabled(
     config: Partial<ResponseValidationConfig> = {}
 ): boolean {
-    const finalConfig = { ...DEFAULT_RESPONSE_VALIDATION_CONFIG, ...config };
+    const finalConfig = { ...getDefaultResponseValidationConfig(), ...config };
     return finalConfig.enabled;
 }
 

@@ -177,8 +177,8 @@ class RouteRegistry {
      */
     convertNextPathToOpenAPI(nextPath: string): string {
         return nextPath
-            .replace(/\[([^\]]+)\]/g, '{$1}') // [id] -> {id}
-            .replace(/\[\.\.\.([^\]]+)\]/g, '{$1*}'); // [...slug] -> {slug*}
+            .replace(/\[\.\.\.([^\]]+)\]/g, '{$1*}') // [...slug] -> {slug*} (먼저 처리)
+            .replace(/\[([^\]]+)\]/g, '{$1}'); // [id] -> {id}
     }
 
     /**

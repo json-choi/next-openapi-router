@@ -13,16 +13,16 @@
     "openapi",
     "spring"
   ],
-  "author": "Your Name",
+  "author": "Json-choi",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/your-username/next-router.git"
+    "url": "git+https://github.com/json-choi/next-router.git"
   },
   "bugs": {
-    "url": "https://github.com/your-username/next-router/issues"
+    "url": "https://github.com/json-choi/next-router/issues"
   },
-  "homepage": "https://github.com/your-username/next-router#readme",
+  "homepage": "https://github.com/json-choi/next-router#readme",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -52,6 +52,7 @@
     "eslint": "^9.37.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
+    "husky": "^9.0.11",
     "next": "^15.0.3",
     "prettier": "^3.6.2",
     "tsup": "^8.5.0",
@@ -72,6 +73,7 @@
     "format:check": "prettier --check \"src/**/*.ts\"",
     "type-check": "tsc --noEmit",
     "clean": "rm -rf dist",
+    "prepare": "husky install",
     "prepublishOnly": "pnpm run clean && pnpm run build && pnpm run test && pnpm run lint"
   }
 }

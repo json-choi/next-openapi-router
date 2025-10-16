@@ -4,5 +4,4 @@ dist/
 *.json
 *.md
 coverage/
-examples/
 docs/

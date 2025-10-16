@@ -92,6 +92,7 @@ export interface ControllerConfig<TUser extends GenericUser = GenericUser> {
      */
 
     onAuthError?: (
+        // eslint-disable-next-line no-unused-vars
         request: NextRequest
     ) => NextResponse | Response | Promise<NextResponse | Response>;
 

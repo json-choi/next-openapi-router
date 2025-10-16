@@ -1,6 +1,9 @@
 import type { ZodError, ZodIssue, ZodSchema } from 'zod';
 import type { ValidationError } from '../core/types';
 
+// Re-export ValidationError for convenience
+export type { ValidationError };
+
 /**
  * Result type for validation operations
  */

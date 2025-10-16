@@ -1,0 +1,55 @@
+# Source files (built files are in dist/)
+src/
+tests/
+examples/
+docs/
+
+# Development files
+.github/
+.husky/
+.claude/
+*.config.*
+.env*
+.eslintrc*
+.prettierrc*
+.prettierignore
+
+# Development dependencies
+node_modules/
+pnpm-lock.yaml
+yarn.lock
+package-lock.json
+
+# Build artifacts
+coverage/
+*.tgz
+
+# Documentation (keep README, LICENSE, CHANGELOG)
+CONTRIBUTING.md
+PRD.md
+IMPLEMENTATION_PLAN.md
+DETAILED_IMPLEMENTATION_PLAN.md
+RESPONSE_SCHEMA_DESIGN.md
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Runtime files
+.env
+.env.local
+.env.production
+
+# Temporary files
+*.tmp
+*.temp

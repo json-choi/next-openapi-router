@@ -6,7 +6,7 @@ import {
     createValidationError,
 } from '../utils/error';
 import {
-    DEFAULT_RESPONSE_VALIDATION_CONFIG,
+    getDefaultResponseValidationConfig,
     validateResponseWithSchemas,
     type ResponseValidationConfig,
 } from '../utils/response-validation';
@@ -383,14 +383,19 @@ async function handleBodyValidation(
     const validationResult = await validateRequestBody(config.bodySchema, context.request);
 
     if (!validationResult.success) {
-        // Check if any error is INVALID_JSON and return 400 status instead of 422
-        const hasInvalidJson = validationResult.errors.some(error => error.code === 'INVALID_JSON');
-        if (hasInvalidJson) {
+        // Check if any error is INVALID_JSON or MISSING_BODY and return 400 status instead of 422
+        const hasBadRequestError = validationResult.errors.some(
+            error => error.code === 'INVALID_JSON' || error.code === 'MISSING_BODY'
+        );
+        if (hasBadRequestError) {
+            const primaryError = validationResult.errors.find(
+                error => error.code === 'INVALID_JSON' || error.code === 'MISSING_BODY'
+            );
             return new NextResponse(
                 JSON.stringify({
                     error: 'Bad Request',
-                    code: 'INVALID_JSON',
-                    message: 'Invalid JSON in request body',
+                    code: primaryError?.code ?? 'BAD_REQUEST',
+                    message: primaryError?.message ?? 'Bad Request',
                     timestamp: new Date().toISOString(),
                     path: context.request.nextUrl.pathname,
                     method: context.method,
@@ -487,7 +492,7 @@ async function handleAuthorization<TUser extends GenericUser>(
                 // Return 403 for authorization failure, not 401
                 return new NextResponse(
                     JSON.stringify({
-                        error: 'Forbidden',
+                        error: 'Insufficient permissions',
                         code: 'AUTHORIZATION_FAILED',
                         message: 'Insufficient permissions',
                         timestamp: new Date().toISOString(),
@@ -537,7 +542,7 @@ async function handleResponseValidation(
 ): Promise<NextResponse> {
     // Check if response validation is enabled
     const responseValidationConfig = {
-        ...DEFAULT_RESPONSE_VALIDATION_CONFIG,
+        ...getDefaultResponseValidationConfig(),
         ...options.responseValidation,
     };
 
