@@ -94,5 +94,5 @@ jobs:
             - name: Notify release success
               run: |
                   echo "🎉 Successfully released ${{ needs.release-please.outputs.tag_name }}"
-                  echo "📦 Package published to NPM: https://www.npmjs.com/package/next-api-kit"
+                  echo "📦 Package published to NPM: https://www.npmjs.com/package/next-openapi-router"
                   echo "🏷️ GitHub release: https://github.com/${{ github.repository }}/releases/tag/${{ needs.release-please.outputs.tag_name }}"
