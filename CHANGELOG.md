@@ -5,6 +5,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0](https://github.com/json-choi/next-router/compare/next-openapi-router-v1.0.2...next-openapi-router-v2.0.0) (2025-10-16)
+
+
+### ⚠ BREAKING CHANGES
+
+* Initial implementation of next-router framework
+
+### ✨ Features
+
+* implement complete Next.js router framework with Spring-style API ([6df8cd1](https://github.com/json-choi/next-router/commit/6df8cd17aa4ebe6dabc09d807207ea917933121a))
+
+
+### 🐛 Bug Fixes
+
+* change package name to next-openapi-router ([29c3db9](https://github.com/json-choi/next-router/commit/29c3db9637c9b0bbd009893a013c6b95b16d0b0a))
+* resolve NPM publish issues ([91b36a4](https://github.com/json-choi/next-router/commit/91b36a4d6978d42919bc533f72e2c1749358d619))
+* test ([055af2a](https://github.com/json-choi/next-router/commit/055af2af22ccdd1550272866db6370bc3901d016))
+* update release-please config for new package name ([a4bd522](https://github.com/json-choi/next-router/commit/a4bd52282f845ce54cae3aa7c87ca2dfe673b613))
+
+
+### 🔧 CI/CD
+
+* fix release-please configuration for proper versioning ([1b26772](https://github.com/json-choi/next-router/commit/1b26772e50a8c03a79a763b778671d89c6266dd3))
+
+
+### 🔨 Maintenance
+
+* **main:** release next-router 1.0.0 ([#1](https://github.com/json-choi/next-router/issues/1)) ([82af585](https://github.com/json-choi/next-router/commit/82af5855e01662e38d27e2d4a9f0e46150b8f5e6))
+* **main:** release next-router 1.0.1 ([#2](https://github.com/json-choi/next-router/issues/2)) ([05679e4](https://github.com/json-choi/next-router/commit/05679e48270a9670e44f89b666e914648ade10c0))
+* **main:** release next-router 1.0.2 ([#3](https://github.com/json-choi/next-router/issues/3)) ([058139a](https://github.com/json-choi/next-router/commit/058139af216e35cd70517571e5b33682169bf362))
+
 ## [1.0.2](https://github.com/json-choi/next-router/compare/next-router-v1.0.1...next-router-v1.0.2) (2025-10-16)
 
 
