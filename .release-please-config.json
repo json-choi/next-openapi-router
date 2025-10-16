@@ -15,7 +15,6 @@
         {"type": "ci", "section": "🔧 CI/CD", "hidden": false},
         {"type": "chore", "section": "🔨 Maintenance", "hidden": false}
       ],
-      "release-as": "1.0.0",
       "bump-minor-pre-major": false,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
