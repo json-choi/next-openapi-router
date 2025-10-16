@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1](https://github.com/json-choi/next-router/compare/next-router-v1.0.0...next-router-v1.0.1) (2025-10-16)
+
+
+### 🐛 Bug Fixes
+
+* resolve NPM publish issues ([91b36a4](https://github.com/json-choi/next-router/commit/91b36a4d6978d42919bc533f72e2c1749358d619))
+
 ## 1.0.0 (2025-10-16)
 
 
