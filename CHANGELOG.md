@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.1](https://github.com/json-choi/next-openapi-router/compare/next-openapi-router-v2.0.0...next-openapi-router-v2.0.1) (2025-10-16)
+
+
+### 📚 Documentation
+
+* update package name references and fix GitHub release action ([bd08eff](https://github.com/json-choi/next-openapi-router/commit/bd08eff84dae21b7fc072ef5849c154396ef09b1))
+
 ## [2.0.0](https://github.com/json-choi/next-router/compare/next-openapi-router-v1.0.2...next-openapi-router-v2.0.0) (2025-10-16)
 
 
