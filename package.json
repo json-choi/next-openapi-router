@@ -1,7 +1,7 @@
 {
   "type": "module",
   "name": "next-openapi-router",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "description": "Spring Framework-style route wrapper for Next.js 15 App Router with comprehensive type safety and authentication support",
   "keywords": [
     "nextjs",
