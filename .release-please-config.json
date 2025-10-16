@@ -2,7 +2,7 @@
   "release-type": "node",
   "packages": {
     ".": {
-      "package-name": "next-router",
+      "package-name": "next-openapi-router",
       "changelog-sections": [
         {"type": "feat", "section": "✨ Features", "hidden": false},
         {"type": "fix", "section": "🐛 Bug Fixes", "hidden": false},
