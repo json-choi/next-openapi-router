@@ -1,6 +1,6 @@
 {
   "type": "module",
-  "name": "next-router",
+  "name": "next-api-kit",
   "version": "0.0.0",
   "description": "Spring Framework-style route wrapper for Next.js 15 App Router with comprehensive type safety and authentication support",
   "keywords": [
