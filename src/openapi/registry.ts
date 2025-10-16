@@ -1,4 +1,4 @@
-import type { RouteRegistration, HttpMethod } from '../core/types';
+import type { HttpMethod, RouteRegistration } from '../core/types';
 
 /**
  * Global route registry for OpenAPI generation
@@ -114,7 +114,7 @@ class RouteRegistry {
 
         const methodDistribution: Record<string, number> = {};
         routes.forEach(route => {
-            methodDistribution[route.method] = (methodDistribution[route.method] || 0) + 1;
+            methodDistribution[route.method] = (methodDistribution[route.method] ?? 0) + 1;
         });
 
         const pathsWithMultipleMethods = paths.filter(
@@ -196,7 +196,10 @@ class RouteRegistry {
                 grouped.set(openApiPath, []);
             }
 
-            grouped.get(openApiPath)!.push(route);
+            const pathRoutes = grouped.get(openApiPath);
+            if (pathRoutes) {
+                pathRoutes.push(route);
+            }
         });
 
         return grouped;

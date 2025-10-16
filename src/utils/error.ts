@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import type { ErrorResponse, ValidationError as CoreValidationError } from '../core/types';
+import type { ValidationError as CoreValidationError, ErrorResponse } from '../core/types';
 
 /**
  * HTTP status codes for different error types
@@ -72,8 +72,8 @@ export function createErrorResponse(
         code: config.code,
         message: config.message,
         timestamp: new Date().toISOString(),
-        path: request?.nextUrl?.pathname || 'unknown',
-        method: request?.method || 'unknown',
+        path: request?.nextUrl?.pathname ?? 'unknown',
+        method: request?.method ?? 'unknown',
         ...(config.details && { details: config.details }),
     };
 
@@ -143,7 +143,7 @@ export function createValidationError(
 ): NextResponse {
     const message =
         errors.length === 1
-            ? errors[0]?.message || 'Validation failed'
+            ? (errors[0]?.message ?? 'Validation failed')
             : `Validation failed with ${errors.length} errors`;
 
     return createErrorResponse(
@@ -170,7 +170,7 @@ export function createInternalError(
     const error =
         typeof messageOrError === 'string'
             ? new Error(messageOrError)
-            : messageOrError || new Error('Internal server error');
+            : (messageOrError ?? new Error('Internal server error'));
 
     // Log the full error for debugging (in development/staging)
     if (process.env['NODE_ENV'] !== 'production') {
@@ -254,7 +254,7 @@ export function createRateLimitError(retryAfter?: number, request?: NextRequest)
         request
     );
 
-    if (retryAfter) {
+    if (retryAfter !== undefined && retryAfter !== null && retryAfter > 0) {
         response.headers.set('Retry-After', retryAfter.toString());
     }
 
@@ -307,7 +307,10 @@ export function createNotFoundError(
  * @returns True if it's a known error type
  */
 export function isKnownError(error: unknown): error is Error {
-    return error instanceof Error && Object.values(ERROR_CODES).includes(error.name as any);
+    return (
+        error instanceof Error &&
+        Object.values(ERROR_CODES).includes(error.name as keyof typeof ERROR_CODES)
+    );
 }
 
 /**
@@ -324,7 +327,7 @@ export function extractErrorMessage(error: unknown): string {
         return error;
     }
 
-    if (error && typeof error === 'object' && 'message' in error) {
+    if (error !== null && error !== undefined && typeof error === 'object' && 'message' in error) {
         return String(error.message);
     }
 
@@ -339,7 +342,7 @@ export function extractErrorMessage(error: unknown): string {
  */
 export function handleRouteError(error: unknown, request?: NextRequest): NextResponse {
     // Handle validation errors specifically
-    if (error && typeof error === 'object' && 'issues' in error) {
+    if (error !== null && error !== undefined && typeof error === 'object' && 'issues' in error) {
         // This is likely a Zod error
         const validationErrors: CoreValidationError[] = [
             {
@@ -421,6 +424,7 @@ export class AuthorizationError extends AppError {
 export class ValidationError extends AppError {
     constructor(
         message = 'Validation failed',
+        // eslint-disable-next-line no-unused-vars
         public details?: CoreValidationError[]
     ) {
         super(message, ERROR_CODES.VALIDATION_ERROR, HTTP_STATUS.UNPROCESSABLE_ENTITY);
@@ -438,6 +442,7 @@ export class ValidationError extends AppError {
 export class InternalError extends AppError {
     constructor(
         message = 'Internal server error',
+        // eslint-disable-next-line no-unused-vars
         public originalError?: Error
     ) {
         super(message, ERROR_CODES.INTERNAL_ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);

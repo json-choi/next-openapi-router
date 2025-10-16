@@ -90,8 +90,10 @@ export interface ControllerConfig<TUser extends GenericUser = GenericUser> {
     /**
      * Custom handler for authentication errors
      */
-    // eslint-disable-next-line no-unused-vars
-    onAuthError?: (request: NextRequest) => NextResponse | Promise<NextResponse>;
+
+    onAuthError?: (
+        request: NextRequest
+    ) => NextResponse | Response | Promise<NextResponse | Response>;
 
     /**
      * Custom handler for validation errors
@@ -101,7 +103,7 @@ export interface ControllerConfig<TUser extends GenericUser = GenericUser> {
         errors: ValidationError[],
         // eslint-disable-next-line no-unused-vars
         request: NextRequest
-    ) => NextResponse | Promise<NextResponse>;
+    ) => NextResponse | Response | Promise<NextResponse | Response>;
 
     /**
      * Custom handler for internal errors
@@ -111,7 +113,7 @@ export interface ControllerConfig<TUser extends GenericUser = GenericUser> {
         error: Error,
         // eslint-disable-next-line no-unused-vars
         request: NextRequest
-    ) => NextResponse | Promise<NextResponse>;
+    ) => NextResponse | Response | Promise<NextResponse | Response>;
 
     /**
      * OpenAPI configuration for documentation generation
@@ -208,6 +210,7 @@ export interface RouteConfig<
 
 /**
  * Context object passed to route handlers
+ * This interface is designed to match the test expectations
  */
 export interface RouteContext<
     TUser extends GenericUser = GenericUser,
@@ -221,41 +224,34 @@ export interface RouteContext<
     request: NextRequest;
 
     /**
+     * Next.js context object containing route parameters
+     */
+    context: { params?: TParams } | undefined;
+
+    /**
      * Authenticated user (if authentication is enabled and successful)
      */
-    user?: TUser;
+    user: TUser | undefined;
 
     /**
      * Validated query parameters
      */
-    query: TQuery;
+    query: TQuery | undefined;
 
     /**
      * Validated request body
      */
-    body: TBody;
+    body: TBody | undefined;
 
     /**
      * Validated path parameters
      */
-    params: TParams;
+    params: TParams | undefined;
 
     /**
      * User roles/permissions (if available)
      */
     roles?: string[];
-
-    /**
-     * Request metadata
-     */
-    metadata: {
-        method: string;
-        url: string;
-        pathname: string;
-        timestamp: Date;
-        userAgent?: string;
-        ip?: string;
-    };
 }
 
 /**

@@ -1,4 +1,4 @@
-import type { ZodSchema, ZodError, ZodIssue } from 'zod';
+import type { ZodError, ZodIssue, ZodSchema } from 'zod';
 import type { ValidationError } from '../core/types';
 
 /**
@@ -69,45 +69,66 @@ export function formatZodError(zodError: ZodError): ValidationError[] {
             case 'invalid_literal':
                 return {
                     ...baseError,
-                    expected: String((issue as any).expected),
-                    received: (issue as any).received,
+                    expected: String((issue as unknown as { expected: unknown }).expected),
+                    received: (issue as unknown as { received: unknown }).received,
                 };
 
             case 'unrecognized_keys':
                 return {
                     ...baseError,
-                    message: `Unrecognized keys: ${issue.keys?.join(', ') || 'unknown'}`,
+                    message: `Unrecognized keys: ${issue.keys?.join(', ') ?? 'unknown'}`,
                 };
 
             case 'invalid_union':
                 return {
                     ...baseError,
                     message: `Invalid input. Expected one of: ${
-                        (issue as any).unionErrors
-                            ?.map((err: any) => err.issues[0]?.expected || 'unknown')
-                            .join(', ') || 'union type'
+                        (
+                            issue as unknown as {
+                                unionErrors?: Array<{ issues: Array<{ expected?: string }> }>;
+                            }
+                        ).unionErrors
+                            ?.map(err => err.issues[0]?.expected ?? 'unknown')
+                            .join(', ') ?? 'union type'
                     }`,
                 };
 
             case 'invalid_string':
                 return {
                     ...baseError,
-                    expected:
-                        typeof (issue as any).validation === 'string'
-                            ? (issue as any).validation
-                            : JSON.stringify((issue as any).validation),
+                    expected: (() => {
+                        const validation = (issue as unknown as { validation?: unknown })
+                            .validation;
+                        return typeof validation === 'string'
+                            ? validation
+                            : JSON.stringify(validation);
+                    })(),
                 };
 
             case 'too_small':
                 return {
                     ...baseError,
-                    expected: `${(issue as any).type} >= ${(issue as any).minimum}${(issue as any).inclusive ? '' : ' (exclusive)'}`,
+                    expected: (() => {
+                        const tooSmallIssue = issue as unknown as {
+                            type?: string;
+                            minimum?: number;
+                            inclusive?: boolean;
+                        };
+                        return `${tooSmallIssue.type ?? 'value'} >= ${tooSmallIssue.minimum ?? 0}${tooSmallIssue.inclusive === true ? '' : ' (exclusive)'}`;
+                    })(),
                 };
 
             case 'too_big':
                 return {
                     ...baseError,
-                    expected: `${(issue as any).type} <= ${(issue as any).maximum}${(issue as any).inclusive ? '' : ' (exclusive)'}`,
+                    expected: (() => {
+                        const tooBigIssue = issue as unknown as {
+                            type?: string;
+                            maximum?: number;
+                            inclusive?: boolean;
+                        };
+                        return `${tooBigIssue.type ?? 'value'} <= ${tooBigIssue.maximum ?? 0}${tooBigIssue.inclusive === true ? '' : ' (exclusive)'}`;
+                    })(),
                 };
 
             default:
@@ -171,7 +192,7 @@ export async function validateRequestBody<T>(
         }
 
         // Check content type
-        const contentType = request.headers.get('content-type') || '';
+        const contentType = request.headers.get('content-type') ?? '';
 
         if (!contentType.includes('application/json')) {
             return {
@@ -250,20 +271,20 @@ export function createMissingFieldsError(fields: string[]): ValidationError[] {
  * @param results - Array of validation results
  * @returns Combined validation result
  */
-export function combineValidationResults<T extends Record<string, any>>(
-    results: Array<{ key: keyof T; result: ValidationResult<any> }>
+export function combineValidationResults<T extends Record<string, unknown>>(
+    results: Array<{ key: keyof T; result: ValidationResult<unknown> }>
 ): ValidationResult<T> {
     const errors: ValidationError[] = [];
     const data: Partial<T> = {};
 
     for (const { key, result } of results) {
         if (result.success) {
-            data[key] = result.data;
+            (data as Record<string, unknown>)[key as string] = result.data;
         } else {
             // Prefix error paths with the field key
             const prefixedErrors = result.errors.map(error => ({
                 ...error,
-                path: [key as string, ...(error.path || [])],
+                path: [key as string, ...(error.path ?? [])],
             }));
             errors.push(...prefixedErrors);
         }
@@ -288,9 +309,14 @@ export function combineValidationResults<T extends Record<string, any>>(
  * @param path - Path array to the property
  * @returns The value at the path or undefined
  */
-export function getNestedValue(obj: any, path: (string | number)[]): unknown {
-    return path.reduce((current, key) => {
-        return current && typeof current === 'object' ? current[key] : undefined;
+export function getNestedValue(obj: unknown, path: (string | number)[]): unknown {
+    return path.reduce((current: unknown, key: string | number) => {
+        return current !== null &&
+            current !== undefined &&
+            typeof current === 'object' &&
+            current !== null
+            ? (current as Record<string | number, unknown>)[key]
+            : undefined;
     }, obj);
 }
 

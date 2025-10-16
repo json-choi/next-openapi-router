@@ -259,7 +259,9 @@ export function createController<TUser extends GenericUser = GenericUser>(
                 Record<
                     HttpMethod,
                     (
+                        // eslint-disable-next-line no-unused-vars
                         _request: NextRequest,
+                        // eslint-disable-next-line no-unused-vars
                         _context?: { params?: unknown }
                     ) => Promise<NextResponse>
                 >
@@ -282,6 +284,7 @@ export function createController<TUser extends GenericUser = GenericUser>(
 
             return handlers as Record<
                 HttpMethod,
+                // eslint-disable-next-line no-unused-vars
                 (_request: NextRequest, _context?: { params?: unknown }) => Promise<NextResponse>
             >;
         },

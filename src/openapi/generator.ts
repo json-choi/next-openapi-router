@@ -1,5 +1,5 @@
-import { zodToJsonSchema } from 'zod-to-json-schema';
 import type { ZodSchema } from 'zod';
+import { zodToJsonSchema } from 'zod-to-json-schema';
 import type { OpenAPIConfig, RouteRegistration } from '../core/types';
 import { getRoutesGroupedByPath } from './registry';
 
@@ -19,8 +19,8 @@ export interface OpenAPISpec {
     }>;
     paths: Record<string, PathItem>;
     components?: {
-        schemas?: Record<string, any>;
-        securitySchemes?: Record<string, any>;
+        schemas?: Record<string, unknown>;
+        securitySchemes?: Record<string, unknown>;
     };
     security?: Array<Record<string, string[]>>;
     tags?: Array<{
@@ -69,7 +69,7 @@ export interface ParameterObject {
     description?: string;
     required?: boolean;
     deprecated?: boolean;
-    schema: any;
+    schema: unknown;
 }
 
 /**
@@ -86,7 +86,7 @@ export interface RequestBodyObject {
  */
 export interface ResponseObject {
     description: string;
-    headers?: Record<string, any>;
+    headers?: Record<string, unknown>;
     content?: Record<string, MediaTypeObject>;
 }
 
@@ -94,8 +94,8 @@ export interface ResponseObject {
  * OpenAPI media type object
  */
 export interface MediaTypeObject {
-    schema?: any;
-    examples?: Record<string, any>;
+    schema?: unknown;
+    examples?: Record<string, unknown>;
 }
 
 /**
@@ -103,7 +103,10 @@ export interface MediaTypeObject {
  */
 export class OpenAPIGenerator {
     private readonly config: OpenAPIConfig;
-    private components: { schemas: Record<string, any>; securitySchemes: Record<string, any> };
+    private components: {
+        schemas: Record<string, unknown>;
+        securitySchemes: Record<string, unknown>;
+    };
 
     constructor(config: OpenAPIConfig) {
         this.config = config;
@@ -119,7 +122,7 @@ export class OpenAPIGenerator {
      * @returns Complete OpenAPI specification
      */
     generateSpec(routes?: RouteRegistration[]): OpenAPISpec {
-        const routesToProcess = routes || Array.from(getRoutesGroupedByPath().values()).flat();
+        const routesToProcess = routes ?? Array.from(getRoutesGroupedByPath().values()).flat();
 
         // Reset components for each generation
         this.components = {
@@ -132,7 +135,11 @@ export class OpenAPIGenerator {
             info: {
                 title: this.config.title,
                 version: this.config.version,
-                ...(this.config.description && { description: this.config.description }),
+                ...(this.config.description !== undefined &&
+                this.config.description !== null &&
+                this.config.description !== ''
+                    ? { description: this.config.description }
+                    : {}),
             },
             paths: this.generatePaths(routesToProcess),
         };
@@ -177,7 +184,10 @@ export class OpenAPIGenerator {
             if (!pathsMap.has(openApiPath)) {
                 pathsMap.set(openApiPath, []);
             }
-            pathsMap.get(openApiPath)!.push(route);
+            const pathRoutes = pathsMap.get(openApiPath);
+            if (pathRoutes) {
+                pathRoutes.push(route);
+            }
         });
 
         const paths: Record<string, PathItem> = {};
@@ -209,9 +219,9 @@ export class OpenAPIGenerator {
 
             if (method in pathItem) {
                 // This should not happen with proper route registration
-                console.warn(`Duplicate method ${route.method} for path ${path}`);
+                // Duplicate method warning - this should not happen with proper route registration
             } else {
-                (pathItem as any)[method] = operation;
+                (pathItem as Record<string, unknown>)[method] = operation;
             }
         });
 
@@ -229,9 +239,12 @@ export class OpenAPIGenerator {
 
         // Add metadata if available
         if (metadata) {
-            if (metadata.summary) operation.summary = metadata.summary;
-            if (metadata.description) operation.description = metadata.description;
-            if (metadata.operationId) operation.operationId = metadata.operationId;
+            if (metadata.summary !== undefined && metadata.summary !== '')
+                operation.summary = metadata.summary;
+            if (metadata.description !== undefined && metadata.description !== '')
+                operation.description = metadata.description;
+            if (metadata.operationId !== undefined && metadata.operationId !== '')
+                operation.operationId = metadata.operationId;
             if (metadata.tags) operation.tags = metadata.tags;
             if (metadata.deprecated !== undefined) operation.deprecated = metadata.deprecated;
             if (metadata.security) operation.security = metadata.security;
@@ -255,7 +268,7 @@ export class OpenAPIGenerator {
 
         // Add authentication requirements
         if (config.auth === 'required') {
-            operation.security = operation.security || [{ bearerAuth: [] }];
+            operation.security = operation.security ?? [{ bearerAuth: [] }];
             this.addDefaultSecurityScheme();
         } else if (config.auth === 'optional') {
             operation.security = [{ bearerAuth: [] }, {}];
@@ -269,18 +282,30 @@ export class OpenAPIGenerator {
      * Generate query parameters from Zod schema
      */
     private generateQueryParameters(schema: ZodSchema): ParameterObject[] {
-        const jsonSchema = zodToJsonSchema(schema, { target: 'openApi3' }) as any;
+        const jsonSchema = zodToJsonSchema(schema, { target: 'openApi3' }) as Record<
+            string,
+            unknown
+        >;
         const parameters: ParameterObject[] = [];
 
-        if (jsonSchema.type === 'object' && jsonSchema.properties) {
-            Object.entries(jsonSchema.properties).forEach(([name, propSchema]) => {
-                parameters.push({
-                    name,
-                    in: 'query',
-                    required: jsonSchema.required?.includes(name) ?? false,
-                    schema: propSchema,
-                });
-            });
+        if (
+            jsonSchema['type'] === 'object' &&
+            jsonSchema['properties'] !== undefined &&
+            jsonSchema['properties'] !== null &&
+            typeof jsonSchema['properties'] === 'object'
+        ) {
+            Object.entries(jsonSchema['properties'] as Record<string, unknown>).forEach(
+                ([name, propSchema]) => {
+                    parameters.push({
+                        name,
+                        in: 'query',
+                        required:
+                            Array.isArray(jsonSchema['required']) &&
+                            (jsonSchema['required'] as string[]).includes(name),
+                        schema: propSchema,
+                    });
+                }
+            );
         }
 
         return parameters;
@@ -377,7 +402,7 @@ export class OpenAPIGenerator {
 
         for (const match of matches) {
             const paramName = match[1];
-            if (paramName) {
+            if (paramName !== undefined && paramName !== null && paramName !== '') {
                 parameters.push({
                     name: paramName,
                     in: 'path',
@@ -404,7 +429,7 @@ export class OpenAPIGenerator {
     /**
      * Get default error schema
      */
-    private getErrorSchema(): any {
+    private getErrorSchema(): Record<string, unknown> {
         return {
             type: 'object',
             properties: {
@@ -449,7 +474,7 @@ export class OpenAPIGenerator {
             500: 'Internal Server Error',
         };
 
-        return descriptions[statusCode] || `HTTP ${statusCode}`;
+        return descriptions[statusCode] ?? `HTTP ${statusCode}`;
     }
 
     /**

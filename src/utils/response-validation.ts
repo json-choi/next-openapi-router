@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { ZodSchema } from 'zod';
-import { validateData } from './validation';
 import type { ValidationError } from '../core/types';
+import { validateData } from './validation';
 
 /**
  * Response validation configuration
@@ -62,7 +62,7 @@ export async function validateResponse(
 ): Promise<ResponseValidationResult> {
     try {
         // Check status code if specified
-        if (statusCode && response.status !== statusCode) {
+        if (statusCode !== undefined && statusCode !== null && response.status !== statusCode) {
             return {
                 valid: false,
                 errors: [
@@ -83,7 +83,7 @@ export async function validateResponse(
 
         // Extract response data
         let responseData: unknown;
-        const contentType = clonedResponse.headers.get('content-type') || '';
+        const contentType = clonedResponse.headers.get('content-type') ?? '';
 
         if (contentType.includes('application/json')) {
             responseData = await clonedResponse.json();
@@ -243,7 +243,8 @@ export async function createValidatedResponse<T>(
         config?: Partial<ResponseValidationConfig>;
     } = {}
 ): Promise<NextResponse> {
-    const { status = 200, headers, config } = options;
+    const HTTP_STATUS_OK = 200;
+    const { status = HTTP_STATUS_OK, headers, config } = options;
     const finalConfig = { ...DEFAULT_RESPONSE_VALIDATION_CONFIG, ...config };
 
     // Create the response
