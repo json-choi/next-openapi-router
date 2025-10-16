@@ -1,8 +1,8 @@
-# next-router
+# next-openapi-router
 
 🚀 **Spring Framework-style route wrapper for Next.js 15 App Router**
 
-[![npm version](https://badge.fury.io/js/next-router.svg)](https://badge.fury.io/js/next-router)
+[![npm version](https://badge.fury.io/js/next-openapi-router.svg)](https://badge.fury.io/js/next-openapi-router)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Tests](https://github.com/your-org/next-router/actions/workflows/test.yml/badge.svg)](https://github.com/your-org/next-router/actions/workflows/test.yml)
@@ -43,11 +43,11 @@ Transform your Next.js API routes with Spring Framework-inspired patterns, autom
 ### Installation
 
 ```bash
-npm install next-router zod
+npm install next-openapi-router zod
 # or
-yarn add next-router zod
+yarn add next-openapi-router zod
 # or
-pnpm add next-router zod
+pnpm add next-openapi-router zod
 ```
 
 ### Basic Usage
@@ -57,7 +57,7 @@ Create your first API route:
 ```typescript
 // app/api/users/route.ts
 import { NextResponse } from 'next/server';
-import { createRoute } from 'next-router';
+import { createRoute } from 'next-openapi-router';
 import { z } from 'zod';
 
 // Define your schemas
@@ -100,7 +100,7 @@ Set up authentication and create protected routes:
 
 ```typescript
 // lib/auth.ts
-import type { AuthProvider } from 'next-router';
+import type { AuthProvider } from 'next-openapi-router';
 
 const authProvider: AuthProvider<User> = {
   async authenticate(request) {
@@ -116,7 +116,7 @@ const authProvider: AuthProvider<User> = {
 };
 
 // lib/controller.ts
-import { createController } from 'next-router';
+import { createController } from 'next-openapi-router';
 
 export const controller = createController({
   auth: authProvider,
@@ -140,7 +140,7 @@ export const POST = controller.post({
 
 ---
 
-## 🎯 Why next-router?
+## 🎯 Why next-openapi-router?
 
 ### **Before (Standard Next.js)**
 ```typescript
@@ -171,7 +171,7 @@ export async function POST(request: Request) {
 }
 ```
 
-### **After (with next-router)**
+### **After (with next-openapi-router)**
 ```typescript
 export const POST = controller.post({
   bodySchema: z.object({
@@ -231,7 +231,7 @@ Works seamlessly with popular authentication solutions:
 ### **Routes & Controllers**
 
 ```typescript
-import { createController, createRoute } from 'next-router';
+import { createController, createRoute } from 'next-openapi-router';
 
 // Individual route
 export const GET = createRoute({
@@ -284,7 +284,7 @@ export const POST = createRoute({
 
 ```typescript
 // app/api/docs/route.ts
-import { generateOpenAPI } from 'next-router';
+import { generateOpenAPI } from 'next-openapi-router';
 
 export async function GET() {
   const spec = generateOpenAPI({
@@ -379,7 +379,7 @@ export const config = {
 ```typescript
 // tests/api/users.test.ts
 import { describe, it, expect } from 'vitest';
-import { testApiRoute } from 'next-router/testing';
+import { testApiRoute } from 'next-openapi-router/testing';
 
 describe('/api/users', () => {
   it('should create a user', async () => {
@@ -402,7 +402,7 @@ describe('/api/users', () => {
 
 ## 📊 Comparison
 
-| Feature | next-router | tRPC | Fastify | Express |
+| Feature | next-openapi-router | tRPC | Fastify | Express |
 |---------|-------------|------|---------|---------|
 | **Next.js 15 App Router** | ✅ | ❌ | ❌ | ❌ |
 | **Zero Config** | ✅ | ❌ | ❌ | ❌ |
@@ -472,6 +472,6 @@ Give a ⭐️ if this project helped you!
 
 **[Documentation](docs/) • [Examples](examples/) • [Changelog](CHANGELOG.md) • [Roadmap](https://github.com/your-org/next-router/projects/1)**
 
-Made with ❤️ by the next-router team
+Made with ❤️ by the next-openapi-router team
 
 </div>
