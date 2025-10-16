@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.0.0 (2025-10-16)
+
+
+### ⚠ BREAKING CHANGES
+
+* Initial implementation of next-router framework
+
+### ✨ Features
+
+* implement complete Next.js router framework with Spring-style API ([6df8cd1](https://github.com/json-choi/next-router/commit/6df8cd17aa4ebe6dabc09d807207ea917933121a))
+
+
+### 🐛 Bug Fixes
+
+* test ([055af2a](https://github.com/json-choi/next-router/commit/055af2af22ccdd1550272866db6370bc3901d016))
+
+
+### 🔧 CI/CD
+
+* fix release-please configuration for proper versioning ([1b26772](https://github.com/json-choi/next-router/commit/1b26772e50a8c03a79a763b778671d89c6266dd3))
+
 ## [1.0.0] - 2025-01-16
 
 ### 🎉 Initial Release
